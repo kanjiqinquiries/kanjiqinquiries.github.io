@@ -245,7 +245,13 @@
   var APP_URL = "https://apps.apple.com/app/id6813856100";
   // TikTok's in-app browser identifies itself with these tokens; ?tiktok=1 lets
   // the help card be previewed from a normal browser.
-  var inTikTok = /musical_ly|BytedanceWebview|Bytedance|TikTok/i.test(navigator.userAgent) ||
+  // A real iPhone browser (Safari, Chrome, Firefox) always has "Safari/" in its
+  // user agent; an in-app WebView like TikTok's doesn't, so that catches it
+  // even if TikTok changes its own tokens. "; wv)" is the Android WebView marker.
+  var ua = navigator.userAgent;
+  var inTikTok = /musical_ly|BytedanceWebview|Bytedance|TikTok/i.test(ua) ||
+    (/iPhone|iPad|iPod/.test(ua) && !/Safari\//.test(ua)) ||
+    /; wv\)/.test(ua) ||
     /[?&]tiktok=1/.test(location.search);
   if (inTikTok) document.body.classList.add("in-tiktok");
 
